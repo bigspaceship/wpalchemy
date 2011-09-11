@@ -12,6 +12,10 @@
 		<option value="c"<?php $mb->the_select_state('c'); ?>>c</option>
 	</select>
 
+	<?php $mb->the_field( 's_single_b' ); ?>
+	<?php echo $mb->form_label( 'Single select (b):' ); ?>
+	<?php echo $mb->form_select( 's_single_b', array( ''=>'Select...', 'a'=>'a', 'b'=>'b', 'c'=>'c' ) ); ?>
+
 	<label>Select Single 2</label><br/>
 
 	<?php $mb->the_field('s_single2'); ?>

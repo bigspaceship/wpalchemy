@@ -5,7 +5,7 @@
  * @copyright	Copyright (c) 2009, Dimas Begunoff, http://farinspace.com
  * @license		http://en.wikipedia.org/wiki/MIT_License The MIT License
  * @package		WPAlchemy
- * @version		1.5
+ * @version		1.4.17
  * @link		http://github.com/farinspace/wpalchemy
  * @link		http://farinspace.com
  */
@@ -1017,26 +1017,29 @@ class WPAlchemy_MetaBox
 	{
 		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : NULL ;
 
-		$uri_parts = parse_url($uri);
-
-		$file = basename($uri_parts['path']);
-
-		if ($uri AND in_array($file, array('post.php', 'post-new.php')))
+		if ( isset( $uri ) )
 		{
-			$post_id = WPAlchemy_MetaBox::_get_post_id();
+			$uri_parts = parse_url($uri);
 
-			$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : NULL ;
+			$file = basename($uri_parts['path']);
 
-			$post_type = $post_id ? get_post_type($post_id) : $post_type ;
-
-			if (isset($post_type))
+			if ($uri AND in_array($file, array('post.php', 'post-new.php')))
 			{
-				return $post_type;
-			}
-			else
-			{
-				// because of the 'post.php' and 'post-new.php' checks above, we can default to 'post'
-				return 'post';
+				$post_id = WPAlchemy_MetaBox::_get_post_id();
+
+				$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : NULL ;
+
+				$post_type = $post_id ? get_post_type($post_id) : $post_type ;
+
+				if (isset($post_type))
+				{
+					return $post_type;
+				}
+				else
+				{
+					// because of the 'post.php' and 'post-new.php' checks above, we can default to 'post'
+					return 'post';
+				}
 			}
 		}
 
@@ -2159,7 +2162,7 @@ class WPAlchemy_MetaBox
 	 
 		// authentication passed, save data
 	 
-		$new_data = $_POST[$this->id];
+		$new_data = isset( $_POST[$this->id] ) ? $_POST[$this->id] : NULL ;
 	 
 		WPAlchemy_MetaBox::clean($new_data);
 
@@ -2319,125 +2322,6 @@ class WPAlchemy_MetaBox
 				}
 			}
 		}
-	}
-
-	function form_label( $attributes = array() )
-	{
-		$default_attributes = array
-		(
-			'for' => $this->get_the_name(),
-		);
-
-		if ( ! is_array( $attributes) )
-		{
-			$default_attributes['value'] = $attributes;
-		}
-
-		$value = null;
-
-		if ( isset( $default_attributes['value'] ) )
-		{
-			$value = $default_attributes['value'];
-
-			unset( $default_attributes['value'] );
-		}
-
-		return '<label ' . $this->form_attributes( $attributes, $default_attributes ) . '>' . $value . '</label>';
-	}
-
-	function form_input( $attributes = array() )
-	{
-		$default_attributes = array
-		(
-			'type' => 'text',
-			'name' => $this->get_the_name(),
-			'value' => $this->get_the_value(),
-		);
-
-		return '<input ' . $this->form_attributes( $attributes, $default_attributes ) . '/>';
-	}
-
-	function form_hidden( $attributes = array() )
-	{
-		$attributes = array_merge( $attributes, array( 'type' => 'hidden' ) );
-		
-		return $this->form_input( $attributes );
-	}
-
-	function form_textarea( $attributes = array() )
-	{
-		$default_attributes = array
-		(
-			'name' => $this->get_the_name(),
-			'value' => $this->get_the_value(),
-		);
-
-		$value = $default_attributes['value'];
-
-		unset( $default_attributes['value'] );
-		
-		return '<textarea ' . $this->form_attributes( $attributes, $default_attributes ) . '>' . $value . '</textarea>';
-	}
-
-	function form_select( $name, $options, $selected = array(), $attributes = array() )
-	{
-		$this->the_field( $name );
-		
-		$default_attributes = array
-		(
-			'id' => $this->get_the_name(),
-			'name' => $this->get_the_name(),
-		);
-
-		$html = array();
-
-		array_push( $html, '<select ' . $this->form_attributes( $attributes, $default_attributes ) . '>' );
-
-		if ( is_array( $options ) )
-		{
-			foreach ( $options as $k => $v )
-			{
-				$select_state = ('' != $k) ? $this->get_the_select_state( $k ) : null ;
-				
-				array_push( $html, '<option value="' . $k . '"'. $select_state .'>' . $v . '</option>' );
-			}
-		}
-
-		array_push( $html, '</select>');
-
-		return implode( '', $html );
-	}
-
-	/**
-	 * Used to create a string of attributes ready to be inserted into a 
-	 * html/xml tag.
-	 *
-	 * @since	1.5
-	 * @access	private
-	 * @param	array an associative array of attributes
-	 * @param	array an associative array of attributes (merged with first param)
-	 * @return	string attributes ready to be inserted into a html/xml tag
-	 */
-	function form_attributes( $attributes, $default_attributes = array() )
-	{
-		if ( ! is_array( $attributes ) )
-		{
-			$attributes = array();
-		}
-
-		if ( is_array( $default_attributes ) && ! empty( $default_attributes ) )
-		{
-			$attributes = array_merge( $default_attributes, $attributes );
-		}
-
-		$attrs = array();
-
-		foreach ( $attributes as $k => $v )
-		{
-			array_push( $attrs, $k . '="' . esc_attr( $v ) . '"' );
-		}
-
-		return implode( ' ', $attrs );
 	}
 }
 
